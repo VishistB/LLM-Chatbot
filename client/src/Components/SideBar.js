@@ -48,7 +48,6 @@ export default function SideBar() {
               }}
               borderRadius={2}
               key={index}
-              onClick={() => setSelectedChat(index)}
             >
               <MenuItem
                 sx={{
@@ -60,6 +59,7 @@ export default function SideBar() {
                   //     backgroundColor: "#34393f", // Set your desired hover color here
                   //   },
                 }}
+                onClick={() => setSelectedChat(index)}
               >
                 <Typography mr={1} color="white">
                   {elem}
