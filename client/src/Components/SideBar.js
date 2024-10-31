@@ -1,10 +1,20 @@
-import React from "react";
-import { Stack, Divider, Box, Typography, MenuItem } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Stack,
+  Divider,
+  Box,
+  Typography,
+  MenuItem,
+  IconButton,
+} from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import Logo from "../Assets/Mimir_Logo.png";
+import ChatIcon from "@mui/icons-material/Chat";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function SideBar() {
-  const chatlist = ["chat1", "chat2", "chat3"];
+  const chatlist = ["CHAT - 1", "CHAT - 2", "CHAT - 3"];
+  const [selectedChat,setSelectedChat] = useState(0);
   return (
     <Drawer
       sx={{
@@ -21,17 +31,47 @@ export default function SideBar() {
     >
       <img src={Logo} width="200px" style={{ margin: "0 auto" }} />
       <Divider />
-      <Stack alignItems="center">
-        <Typography variant="subtitle1" color="white" sx={{margin:"20px auto"}}>
+      <Stack>
+        <Typography color="#76808a" mt={3} mb={1} ml={2}>
           CHATS
         </Typography>
-        {chatlist.map((elem) => (
-            <MenuItem backgroundColor="">
-                <Typography color="white">
-                    {elem}
+        <Stack alignItems="center" width="100%" gap={2}>
+          {chatlist.map((elem, index) => (
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="center"
+              sx={{
+                backgroundColor:
+                  index === selectedChat ? "#34393e" : "rgba(0,0,0,0)",
+                width:"90%",
+              }}
+              borderRadius={2}
+              key={index}
+              onClick={() => setSelectedChat(index)}
+            >
+              <MenuItem
+                sx={{
+                  backgroundColor: "rgba(0,0,0,0)",
+                  width: "90%",
+                  margin: "0 auto",
+                  borderRadius: 1,
+                  //   "&:hover": {
+                  //     backgroundColor: "#34393f", // Set your desired hover color here
+                  //   },
+                }}
+              >
+                <Typography mr={1} color="white">
+                  {elem}
                 </Typography>
-            </MenuItem>
-        ))}
+                <ChatIcon sx={{ color: "#4A9E8F" }}></ChatIcon>
+              </MenuItem>
+              <IconButton>
+                <DeleteIcon sx={{ color: "#FF0000" }}></DeleteIcon>
+              </IconButton>
+            </Stack>
+          ))}
+        </Stack>
       </Stack>
     </Drawer>
   );
