@@ -1,31 +1,14 @@
 import "./App.css";
-import Drawer from '@mui/material/Drawer';
-import { Stack, Divider, Box } from "@mui/material";
-import Logo from './Assets/Mimir_Logo.png';
+import { Box } from "@mui/material";
 import ResponsiveAppBar from  "./Components/ResponsiveAppBar";
 import ChatPage from "./Pages/ChatPage";
+import SideBar from "./Components/SideBar";
 
 function App() {
   return (
     <Box sx={{ display: "flex", background: "#1A1D20", height: "100vh" }}>
-      {/* Drawer */}
-      <Drawer
-        sx={{
-          width: 250,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            backgroundColor: "#23262A",
-            width: 250,
-            boxSizing: 'border-box',
-          },
-        }}
-        variant="permanent"
-        anchor="left"
-      >
-        <img src={Logo} width="200px" style={{ margin: "0 auto" }} />
-        <Divider />
-      </Drawer>
 
+      <SideBar/>
       <Box
         sx={{
           flexGrow: 1,

@@ -8,14 +8,14 @@ export default function ChatPage() {
       height="100%"
       justifyContent="center"
       alignItems="center"
-      sx={{ color: "white", padding: 2, backgroundColor: "#1A1D20" }}
+      sx={{ color: "white", padding: 0, backgroundColor: "#1A1D20" }}
     >
       {/* Chat Window */}
       <Box
         sx={{
           width: "100%",
-          maxWidth: 1000,
-        //   height: "70%",
+          maxWidth: 1000, 
+          height: "80%",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
@@ -24,7 +24,6 @@ export default function ChatPage() {
           overflow: "hidden",
         }}
       >
-        {/* Messages Display Area */}
         <Box
           sx={{
             flexGrow: 1,
@@ -35,7 +34,6 @@ export default function ChatPage() {
             gap: 1,
           }}
         >
-          {/* Chatbot Message */}
           <Box
             sx={{
               display: "flex",
@@ -56,7 +54,6 @@ export default function ChatPage() {
             </Typography>
           </Box>
 
-          {/* User Message */}
           <Box
             sx={{
               display: "flex",
@@ -106,7 +103,7 @@ export default function ChatPage() {
             alignItems: "center",
             // padding: 1,
             backgroundColor: "#1A1D20",
-            borderTop: "1px solid #333",
+            // borderTop: "1px solid #333",
           }}
         >
           <TextField
