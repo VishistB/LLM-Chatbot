@@ -1,11 +1,15 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets, permissions
 from django.http import HttpResponse
 from langchain_huggingface import HuggingFaceEndpoint
 import environ
 from time import sleep
+from .serializers import ChatSerializer, MessageSerializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import action
+from .models import Chat, Message
 
 env = environ.Env()
 # environ.Env.read_env()
@@ -32,3 +36,21 @@ class PromptResponseView(APIView):
             
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class ChatViewSet(viewsets.ModelViewSet):
+    queryset = Chat.objects.all()
+    serializer_class = ChatSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Chat.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=['get'])
+    def messages(self, request, pk=None):
+        chat = self.get_object()
+        messages = Message.objects.filter(chat=chat)
+        serializer = MessageSerializer(messages, many=True)
+        return Response(serializer.data)
