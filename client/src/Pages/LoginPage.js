@@ -4,6 +4,9 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Logo from "../Assets/Mimir_Logo.png";
 
+// to do: handle the redirects when on base URL
+
+
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -12,17 +15,14 @@ export default function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Request JWT tokens from the authentication endpoint
       const response = await axios.post('http://localhost:8000/api/token/', { 
         username, 
         password 
       });
 
-      // Store the access token in sessionStorage
       sessionStorage.setItem('accessToken', response.data.access);
       sessionStorage.setItem('refreshToken', response.data.refresh);
 
-      // Redirect user to dashboard after successful login
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
@@ -58,10 +58,10 @@ export default function LoginPage() {
           fullWidth
           sx={{
             mb: 2,
-            "& .MuiInputLabel-root": { color: "white" },  // Label color
+            "& .MuiInputLabel-root": { color: "white" },
             "& .MuiOutlinedInput-root": {
-              "& input": { color: "white" },  // Input text color
-              "& fieldset": { borderColor: "#4A9E8F" },  // Outline color
+              "& input": { color: "white" },
+              "& fieldset": { borderColor: "#4A9E8F" },
               "&:hover fieldset": { borderColor: "#4A9E8F" },
               "&.Mui-focused fieldset": { borderColor: "#4A9E8F" },
             },
