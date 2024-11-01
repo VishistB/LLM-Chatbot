@@ -12,8 +12,17 @@ export default function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/auth/login/', { username, password });
-      localStorage.setItem('token', response.data.token);
+      // Request JWT tokens from the authentication endpoint
+      const response = await axios.post('http://localhost:8000/api/token/', { 
+        username, 
+        password 
+      });
+
+      // Store the access token in sessionStorage
+      sessionStorage.setItem('accessToken', response.data.access);
+      sessionStorage.setItem('refreshToken', response.data.refresh);
+
+      // Redirect user to dashboard after successful login
       navigate('/dashboard');
     } catch (error) {
       console.error('Login error:', error);

@@ -13,7 +13,7 @@ import {
 
 function PrivateRoute({ children }) {
   const location = useLocation();
-  const isLoggedIn = !!localStorage.getItem("token");
+  const isLoggedIn = !!sessionStorage.getItem("accessToken");
 
   return isLoggedIn ? (
     children
@@ -23,11 +23,18 @@ function PrivateRoute({ children }) {
 }
 
 function App() {
-  // const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!sessionStorage.getItem("accessToken"));
 
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("token"));
+    const handleStorageChange = () => {
+      setIsLoggedIn(!!sessionStorage.getItem("accessToken"));
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
   }, []);
 
   return (
