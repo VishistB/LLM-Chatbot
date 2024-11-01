@@ -1,6 +1,6 @@
 # LLM Chatbot
 
-In progress LLM chatbot.
+A work in progress LLM chatbot made using the Mistral-7B-Instruct-v0.3 model for inference.
 
-# Present UI progress
+# ChatBot UI
 ![alt text](image.png)
