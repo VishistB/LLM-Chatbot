@@ -20,7 +20,7 @@ export default function RegisterPage() {
       if (error.response && error.response.data) {
         setErrors(error.response.data);
       } else {
-        console.error('Registration error:', error);
+        console.error('Registration error:', error.message);
       }
     }
   };
