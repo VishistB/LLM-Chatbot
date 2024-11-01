@@ -4,19 +4,24 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Logo from "../Assets/Mimir_Logo.png";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/api/auth/login/', { username, password });
-      localStorage.setItem('token', response.data.token);
-      navigate('/dashboard');
+      await axios.post('http://localhost:8000/api/auth/register/', { username, email, password });
+      navigate('/login');
     } catch (error) {
-      console.error('Login error:', error);
+      if (error.response && error.response.data) {
+        setErrors(error.response.data);
+      } else {
+        console.error('Registration error:', error);
+      }
     }
   };
 
@@ -24,7 +29,7 @@ export default function LoginPage() {
     <Stack sx={{ backgroundColor: "#1A1D20", height: "100vh" }} alignItems="center" justifyContent="center">
       <Box 
         component="form" 
-        onSubmit={handleLogin} 
+        onSubmit={handleRegister} 
         sx={{
           display: 'flex', 
           flexDirection: 'column', 
@@ -38,7 +43,7 @@ export default function LoginPage() {
         <img src={Logo} width="200px" style={{ margin: "0 auto" }} />
         
         <Typography variant="h5" color="white" textAlign="center" mb={2}>
-          Login
+          Register
         </Typography>
 
         <TextField
@@ -47,18 +52,41 @@ export default function LoginPage() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           fullWidth
+          error={!!errors.username}
+          helperText={errors.username ? errors.username[0] : ''}
           sx={{
             mb: 2,
-            "& .MuiInputLabel-root": { color: "white" },  // Label color
+            "& .MuiInputLabel-root": { color: "white" },
             "& .MuiOutlinedInput-root": {
-              "& input": { color: "white" },  // Input text color
-              "& fieldset": { borderColor: "#4A9E8F" },  // Outline color
+              "& input": { color: "white" },
+              "& fieldset": { borderColor: "#4A9E8F" },
               "&:hover fieldset": { borderColor: "#4A9E8F" },
               "&.Mui-focused fieldset": { borderColor: "#4A9E8F" },
             },
           }}
         />
-        
+
+        <TextField
+          label="Email"
+          variant="outlined"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          fullWidth
+          error={!!errors.email}
+          helperText={errors.email ? errors.email[0] : ''}
+          sx={{
+            mb: 2,
+            "& .MuiInputLabel-root": { color: "white" },
+            "& .MuiOutlinedInput-root": {
+              "& input": { color: "white" },
+              "& fieldset": { borderColor: "#4A9E8F" },
+              "&:hover fieldset": { borderColor: "#4A9E8F" },
+              "&.Mui-focused fieldset": { borderColor: "#4A9E8F" },
+            },
+          }}
+        />
+
         <TextField
           label="Password"
           variant="outlined"
@@ -66,6 +94,8 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           fullWidth
+          error={!!errors.password}
+          helperText={errors.password ? errors.password[0] : ''}
           sx={{
             mb: 2,
             "& .MuiInputLabel-root": { color: "white" },
@@ -79,11 +109,11 @@ export default function LoginPage() {
         />
         
         <Button type="submit" variant="contained" fullWidth sx={{ mb: 2, backgroundColor:"#4A9E8F" }}>
-          Login
+          Register
         </Button>
 
         <Typography color="white" textAlign="center">
-          Don't have an account? <Link href="/register" sx={{color:"#4A9E8F"}}>Register here</Link>
+          Already have an account? <Link href="/login" sx={{color:"#4A9E8F"}}>Login here</Link>
         </Typography>
       </Box>
     </Stack>
