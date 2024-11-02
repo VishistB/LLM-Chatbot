@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Logo from "../Assets/Mimir_Logo.png";
 
-// to do: handle the redirects when on base URL
 
 
 export default function LoginPage() {

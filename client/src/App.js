@@ -23,11 +23,15 @@ function PrivateRoute({ children }) {
 }
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!sessionStorage.getItem("accessToken"));
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!sessionStorage.getItem("accessToken") && !!sessionStorage.getItem("refreshToken")
+  );
 
   useEffect(() => {
     const handleStorageChange = () => {
-      setIsLoggedIn(!!sessionStorage.getItem("accessToken"));
+      setIsLoggedIn(
+        !!sessionStorage.getItem("accessToken") && !!sessionStorage.getItem("refreshToken")
+      );
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -40,6 +44,12 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/"
+          element={
+            isLoggedIn ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
+          }
+        />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         {/* Protected routes */}
