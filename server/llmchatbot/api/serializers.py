@@ -12,13 +12,9 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    chat_id = serializers.UUIDField(read_only=True)
-    messages = MessageSerializer(many=True, read_only=True)
-
     class Meta:
         model = Chat
-        fields = ['id', 'chat_id', 'created_at', 'messages']
-        read_only_fields = ['id', 'chat_id', 'created_at']
+        fields = ['chat_id', 'name', 'created_at']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)

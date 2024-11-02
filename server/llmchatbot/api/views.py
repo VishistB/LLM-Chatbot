@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, viewsets, permissions
+from rest_framework import status, viewsets, permissions, generics
 from django.http import HttpResponse
 from langchain_huggingface import HuggingFaceEndpoint
 import environ
@@ -48,20 +48,28 @@ class RegisterView(APIView):
             return Response({"message": "User registered successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+
 class ChatViewSet(viewsets.ModelViewSet):
-    queryset = Chat.objects.all()
-    serializer_class = ChatSerializer
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ChatSerializer
+    lookup_field = 'chat_id'
 
     def get_queryset(self):
         return Chat.objects.filter(user=self.request.user)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def create(self, request, *args, **kwargs):
+        name = request.data.get("name", "Untitled Chat")
+        chat = Chat.objects.create(user=request.user, name=name)
+        return Response(ChatSerializer(chat).data, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['get'])
-    def messages(self, request, pk=None):
-        chat = self.get_object()
-        messages = Message.objects.filter(chat=chat)
-        serializer = MessageSerializer(messages, many=True)
-        return Response(serializer.data)
+    @action(detail=True, methods=['delete'])
+    def delete_chat(self, request, chat_id=None):
+        """Deletes a chat instance."""
+        try:
+            chat = self.get_queryset().get(chat_id=chat_id)
+            chat.delete()
+            return Response({"message": "Chat deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except Chat.DoesNotExist:
+            return Response({"error": "Chat not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
