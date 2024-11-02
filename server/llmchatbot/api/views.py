@@ -11,6 +11,9 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.decorators import action
 from .models import Chat, Message
 from rest_framework.permissions import AllowAny
+from rest_framework.generics import ListAPIView
+from datetime import datetime
+
 
 env = environ.Env()
 # environ.Env.read_env()
@@ -23,18 +26,27 @@ class endpointview(APIView):
     
 
 class PromptResponseView(APIView):
-    def post(self, request):
+    def post(self, request, chat_id):
         try:
             prompt = request.data.get('prompt')
             if not prompt:
                 return Response({"error": "No prompt provided"}, status=status.HTTP_400_BAD_REQUEST)
             
+            chat = Chat.objects.get(id=chat_id)
+
+            user_message = Message(chat=chat, sender="user", content=prompt, timestamp=datetime.now())
+            user_message.save()
+
             HUGGINGFACE_API_KEY = env('HUGGINGFACE_API_KEY')
-            repo_id="mistralai/Mistral-7B-Instruct-v0.3"
-            llm=HuggingFaceEndpoint(repo_id=repo_id,max_length=128,temperature=0.7,api=HUGGINGFACE_API_KEY)
-            ans=llm.invoke(prompt)
-            return Response({"response": ans}, status=status.HTTP_200_OK)
-            
+            repo_id = "mistralai/Mistral-7B-Instruct-v0.3"
+            llm = HuggingFaceEndpoint(repo_id=repo_id, max_length=128, temperature=0.7, api=HUGGINGFACE_API_KEY)
+            response_text = llm.invoke(prompt)
+
+            bot_message = Message(chat=chat, sender="bot", content=response_text, timestamp=datetime.now())
+            bot_message.save()
+
+            return Response({"response": response_text}, status=status.HTTP_200_OK)
+
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
@@ -73,3 +85,9 @@ class ChatViewSet(viewsets.ModelViewSet):
             return Response({"error": "Chat not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
+class ChatMessagesView(ListAPIView):
+    serializer_class = MessageSerializer
+
+    def get_queryset(self):
+        chat_id = self.kwargs["chat_id"]
+        return Message.objects.filter(chat_id=chat_id).order_by("timestamp")

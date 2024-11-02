@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import {
   Stack,
   Divider,
@@ -19,7 +19,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import axios from "axios";
 
-export default function SideBar() {
+export const MessagesContext = createContext();
+
+export default function SideBar({ setMessages }) {
   const [chatlist, setChatlist] = useState([]);
   const [selectedChat, setSelectedChat] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
@@ -34,11 +36,27 @@ export default function SideBar() {
   const fetchChats = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/chats/", {
-        headers: { Authorization: `Bearer ${sessionStorage.getItem("accessToken")}` }
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
       });
       setChatlist(response.data);
     } catch (error) {
       console.error("Failed to load chats:", error);
+    }
+  };
+
+  const handleChatSelect = async (chat_id) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/api/chats/${chat_id}/messages/`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
+      });
+      setMessages(response.data);  // Pass messages to context
+      setSelectedChat(chat_id);
+    } catch (error) {
+      console.error("Failed to load messages:", error);
     }
   };
 
@@ -49,10 +67,15 @@ export default function SideBar() {
 
   const handleDeleteChat = async () => {
     try {
-      await axios.delete(`http://localhost:8000/api/chats/${chatToDelete}/delete_chat/`, {
-        headers: { Authorization: `Bearer ${sessionStorage.getItem("accessToken")}` }
-      });
-      setChatlist(chatlist.filter(chat => chat.chat_id !== chatToDelete));
+      await axios.delete(
+        `http://localhost:8000/api/chats/${chatToDelete}/delete_chat/`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      setChatlist(chatlist.filter((chat) => chat.chat_id !== chatToDelete));
       setConfirmDialogOpen(false);
       setChatToDelete(null);
     } catch (error) {
@@ -71,11 +94,17 @@ export default function SideBar() {
 
   const handleCreateChat = async () => {
     try {
-      const response = await axios.post("http://localhost:8000/api/chats/", {
-        name: newChatName,
-      }, {
-        headers: { Authorization: `Bearer ${sessionStorage.getItem("accessToken")}` }
-      });
+      const response = await axios.post(
+        "http://localhost:8000/api/chats/",
+        {
+          name: newChatName,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
       setChatlist([...chatlist, response.data]);
       setSelectedChat(chatlist.length);
       closeCreateChatModal();
@@ -85,7 +114,7 @@ export default function SideBar() {
   };
 
   return (
-    <>
+    <MessagesContext.Provider value={setMessages}>
       <Drawer
         sx={{
           width: 250,
@@ -127,12 +156,12 @@ export default function SideBar() {
                       margin: "0 auto",
                       borderRadius: 1,
                     }}
-                    onClick={() => setSelectedChat(index)}
+                    onClick={() => handleChatSelect(chat.chat_id)}
                   >
-                    <Typography mr={1} color="white">
+                    <ChatIcon sx={{ color: "#4A9E8F" }} />
+                    <Typography ml={1} color="white">
                       {chat.name}
                     </Typography>
-                    <ChatIcon sx={{ color: "#4A9E8F" }} />
                   </MenuItem>
                   <IconButton onClick={() => confirmDeleteChat(chat.chat_id)}>
                     <DeleteIcon sx={{ color: "#FF0000" }} />
@@ -183,7 +212,10 @@ export default function SideBar() {
       </Dialog>
 
       {/* Confirmation Dialog for Deletion */}
-      <Dialog open={confirmDialogOpen} onClose={() => setConfirmDialogOpen(false)}>
+      <Dialog
+        open={confirmDialogOpen}
+        onClose={() => setConfirmDialogOpen(false)}
+      >
         <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
           <Typography>Are you sure you want to delete this chat?</Typography>
@@ -197,6 +229,6 @@ export default function SideBar() {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </MessagesContext.Provider>
   );
 }

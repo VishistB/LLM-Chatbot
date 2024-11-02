@@ -13,7 +13,7 @@ class Chat(models.Model):
 
 class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name="messages")
-    sender = models.CharField(max_length=10, choices=[("user", "User"), ("bot", "Bot")])
+    sender = models.CharField(max_length=50)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 

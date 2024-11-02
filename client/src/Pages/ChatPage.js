@@ -1,8 +1,11 @@
-import React from 'react';
-import { Stack, Box, TextField, IconButton, Typography } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+import React, { useContext } from "react";
+import { Stack, Box, TextField, IconButton, Typography } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import { MessagesContext } from "../Components/SideBar";
 
 export default function ChatPage() {
+  const messages = useContext(MessagesContext);  
+
   return (
     <Stack
       height="100%"
@@ -19,8 +22,6 @@ export default function ChatPage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-        //   backgroundColor: "#2A2D32",
-        //   borderRadius: 2,
           overflow: "hidden",
         }}
       >
@@ -34,12 +35,8 @@ export default function ChatPage() {
             gap: 1,
           }}
         >
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-            }}
-          >
+          {/* Display a default message if no messages are present */}
+          {messages.length === 0 ? (
             <Typography
               variant="body2"
               sx={{
@@ -47,53 +44,35 @@ export default function ChatPage() {
                 backgroundColor: "#3A3F45",
                 padding: 1,
                 borderRadius: 2,
-                alignSelf: "flex-start",
+                alignSelf: "center",
               }}
             >
-              Hello! How can I assist you today?
+              Start a new conversation by typing a message below.
             </Typography>
-          </Box>
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-            }}
-          >
-            <Typography
-              variant="body2"
-              sx={{
-                maxWidth: "70%",
-                backgroundColor: "#4B4F57",
-                padding: 1,
-                borderRadius: 2,
-                alignSelf: "flex-end",
-              }}
-            >
-              I'd like to know more about your services.
-            </Typography>
-          </Box>
-
-          {/* Additional Messages */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-            }}
-          >
-            <Typography
-              variant="body2"
-              sx={{
-                maxWidth: "70%",
-                backgroundColor: "#3A3F45",
-                padding: 1,
-                borderRadius: 2,
-                alignSelf: "flex-start",
-              }}
-            >
-              Sure! We offer a range of services to help you succeed.
-            </Typography>
-          </Box>
+          ) : (
+            messages.map((msg, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: "flex",
+                  justifyContent: msg.sender === "user" ? "flex-end" : "flex-start",
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  sx={{
+                    maxWidth: "70%",
+                    backgroundColor: msg.sender === "user" ? "#4B4F57" : "#3A3F45",
+                    padding: 1,
+                    borderRadius: 2,
+                    alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
+                  }}
+                >
+                  {msg.content}
+                </Typography>
+              </Box>
+            ))
+          )}
         </Box>
 
         {/* Input Area */}
@@ -101,9 +80,7 @@ export default function ChatPage() {
           sx={{
             display: "flex",
             alignItems: "center",
-            // padding: 1,
             backgroundColor: "#1A1D20",
-            // borderTop: "1px solid #333",
           }}
         >
           <TextField
