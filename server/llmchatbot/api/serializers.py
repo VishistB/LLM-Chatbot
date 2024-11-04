@@ -3,12 +3,14 @@ from .models import Chat, Message
 from django.contrib.auth.models import User
 
 class MessageSerializer(serializers.ModelSerializer):
-    sender = serializers.CharField(source='get_sender_display') 
+    sender = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
-        fields = ['id', 'sender', 'content', 'timestamp']
-        read_only_fields = ['id', 'timestamp']
+        fields = ['id', 'chat', 'sender', 'content', 'timestamp']
+
+    def get_sender(self, obj):
+        return obj.sender if obj.sender != "user" else obj.chat.user.username
 
 
 class ChatSerializer(serializers.ModelSerializer):
