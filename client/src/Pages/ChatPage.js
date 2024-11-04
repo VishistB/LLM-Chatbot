@@ -1,14 +1,37 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Stack, Box, TextField, IconButton, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import axios from "axios";
 import { MessagesContext } from "../Components/SideBar";
 
-export default function ChatPage() {
+export default function ChatPage({ selectedChatId, setMessages }) {
   const messages = useContext(MessagesContext);
+  const [inputMessage, setInputMessage] = useState("");
 
-  useEffect(() => {
-    console.log("Messages in ChatPage:", messages);
-  }, [messages]);
+  const handleSendMessage = async () => {
+    if (!inputMessage || !selectedChatId) return;
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/chats/${selectedChatId}/prompt_response/`,
+        { prompt: inputMessage },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { sender: "user", content: inputMessage },
+        { sender: "mimir", content: response.data.response },
+      ]);
+      setInputMessage("");
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+  };
 
   return (
     <Stack
@@ -17,7 +40,6 @@ export default function ChatPage() {
       alignItems="center"
       sx={{ color: "white", padding: 0, backgroundColor: "#1A1D20" }}
     >
-      {/* Chat Window */}
       <Box
         sx={{
           width: "100%",
@@ -39,7 +61,6 @@ export default function ChatPage() {
             gap: 1,
           }}
         >
-          {/* Display a default message if no messages are present */}
           {messages.length === 0 ? (
             <Typography
               variant="body2"
@@ -56,12 +77,12 @@ export default function ChatPage() {
           ) : (
             messages.map((msg, index) => (
               <Box
-                key={index}
-                sx={{
-                  display: "flex",
-                  justifyContent:
-                    msg.sender === "user" ? "flex-end" : "flex-start",
-                }}
+              key={index}
+              sx={{
+                display: "flex",
+                justifyContent:
+                msg.sender === "mimir" ? "flex-start" : "flex-end",
+              }}
               >
                 <Typography
                   variant="body2"
@@ -71,10 +92,9 @@ export default function ChatPage() {
                       msg.sender === "user" ? "#4B4F57" : "#3A3F45",
                     padding: 1,
                     borderRadius: 2,
-                    alignSelf:
-                      msg.sender === "user" ? "flex-end" : "flex-start",
                   }}
                 >
+                  {/* {msg.sender} */}
                   {msg.content}
                 </Typography>
               </Box>
@@ -82,7 +102,6 @@ export default function ChatPage() {
           )}
         </Box>
 
-        {/* Input Area */}
         <Box
           sx={{
             display: "flex",
@@ -94,6 +113,8 @@ export default function ChatPage() {
             variant="outlined"
             placeholder="Type a message"
             fullWidth
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
             sx={{
               input: { color: "white" },
               "& .MuiOutlinedInput-root": {
@@ -109,7 +130,10 @@ export default function ChatPage() {
               },
             }}
           />
-          <IconButton sx={{ marginLeft: 2, color: "#4A9E8F" }}>
+          <IconButton
+            onClick={handleSendMessage}
+            sx={{ marginLeft: 2, color: "#4A9E8F" }}
+          >
             <SendIcon />
           </IconButton>
         </Box>
@@ -117,3 +141,4 @@ export default function ChatPage() {
     </Stack>
   );
 }
+

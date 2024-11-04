@@ -21,7 +21,7 @@ import axios from "axios";
 
 export const MessagesContext = createContext();
 
-export default function SideBar({ setMessages }) {
+export default function SideBar({ setMessages, setSelectedChatId }) {
   const [chatlist, setChatlist] = useState([]);
   const [selectedChat, setSelectedChat] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
@@ -33,6 +33,13 @@ export default function SideBar({ setMessages }) {
     fetchChats();
   }, []);
 
+  useEffect(() => {
+    if (chatlist.length > 0) {
+      handleChatSelect(chatlist[0].chat_id);
+      setSelectedChat(chatlist[0].chat_id);
+    }
+  }, [chatlist]);
+
   const fetchChats = async () => {
     try {
       const response = await axios.get("http://localhost:8000/api/chats/", {
@@ -40,7 +47,17 @@ export default function SideBar({ setMessages }) {
           Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
         },
       });
+      
+      // Set the chat list directly from the ordered response
       setChatlist(response.data);
+  
+      // Auto-select the latest modified chat and load its messages
+      if (response.data.length > 0) {
+        const latestChatId = response.data[0].chat_id;
+        setSelectedChat(latestChatId);
+        setSelectedChatId(latestChatId);
+        handleChatSelect(latestChatId); // Load messages for the latest chat
+      }
     } catch (error) {
       console.error("Failed to load chats:", error);
     }
@@ -48,18 +65,29 @@ export default function SideBar({ setMessages }) {
 
   const handleChatSelect = async (chat_id) => {
     try {
-      const response = await axios.get(`http://localhost:8000/api/chats/${chat_id}/messages/`, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-        },
-      });
-      console.log("Fetched messages:", response.data);
-      setMessages(response.data);  // Pass messages to context
+      const response = await axios.get(
+        `http://localhost:8000/api/chats/${chat_id}/messages/`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+  
+      // Assuming response.data is an array of messages with sender info
+      const messagesWithSender = response.data.map((message) => ({
+        sender: message.sender, // e.g., 'user' or 'bot'
+        content: message.content,
+      }));
+  
+      setMessages(messagesWithSender); // This updates MessagesContext
       setSelectedChat(chat_id);
+      setSelectedChatId(chat_id);
     } catch (error) {
       console.error("Failed to load messages:", error);
     }
   };
+  
 
   const confirmDeleteChat = (chat_id) => {
     setChatToDelete(chat_id);
@@ -97,17 +125,19 @@ export default function SideBar({ setMessages }) {
     try {
       const response = await axios.post(
         "http://localhost:8000/api/chats/",
-        {
-          name: newChatName,
-        },
+        { name: newChatName },
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
           },
         }
       );
-      setChatlist([...chatlist, response.data]);
-      setSelectedChat(chatlist.length);
+
+      const newChat = response.data;
+      setChatlist([newChat, ...chatlist]);
+      setSelectedChat(newChat.chat_id);
+      setSelectedChatId(newChat.chat_id);
+      handleChatSelect(newChat.chat_id);
       closeCreateChatModal();
     } catch (error) {
       console.error("Failed to create chat:", error);
@@ -137,14 +167,16 @@ export default function SideBar({ setMessages }) {
           </Typography>
           <Stack alignItems="center" width="100%" gap={2}>
             {chatlist.length > 0 ? (
-              chatlist.map((chat, index) => (
+              chatlist.map((chat) => (
                 <Stack
                   direction="row"
                   alignItems="center"
                   justifyContent="center"
                   sx={{
                     backgroundColor:
-                      index === selectedChat ? "#34393e" : "rgba(0,0,0,0)",
+                      chat.chat_id === selectedChat
+                        ? "#34393e"
+                        : "rgba(0,0,0,0)",
                     width: "90%",
                   }}
                   borderRadius={2}
@@ -175,6 +207,7 @@ export default function SideBar({ setMessages }) {
               </Typography>
             )}
           </Stack>
+
           <Button
             variant="outlined"
             onClick={openCreateChatModal}

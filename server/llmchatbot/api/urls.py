@@ -11,7 +11,8 @@ router.register(r'chats', views.ChatViewSet, basename='chat')
 
 urlpatterns = [
     path('',include(router.urls),name='endpoints'),
-    path('prompts/',views.PromptResponseView.as_view(),name='prompts'),
+    # path('prompts/',views.PromptResponseView.as_view(),name='prompts'),
+    path("chats/<uuid:chat_id>/prompt_response/", views.PromptResponseView.as_view(), name="prompt_response"),
     path('auth/register/', views.RegisterView.as_view(), name='register'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

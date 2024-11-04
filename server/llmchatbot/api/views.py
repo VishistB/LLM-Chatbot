@@ -32,7 +32,7 @@ class PromptResponseView(APIView):
             if not prompt:
                 return Response({"error": "No prompt provided"}, status=status.HTTP_400_BAD_REQUEST)
             
-            chat = Chat.objects.get(id=chat_id)
+            chat = Chat.objects.get(chat_id=chat_id)
 
             user_message = Message(chat=chat, sender="user", content=prompt, timestamp=datetime.now())
             user_message.save()
@@ -42,13 +42,17 @@ class PromptResponseView(APIView):
             llm = HuggingFaceEndpoint(repo_id=repo_id, max_length=128, temperature=0.7, api=HUGGINGFACE_API_KEY)
             response_text = llm.invoke(prompt)
 
-            bot_message = Message(chat=chat, sender="bot", content=response_text, timestamp=datetime.now())
+            bot_message = Message(chat=chat, sender="mimir", content=response_text, timestamp=datetime.now())
             bot_message.save()
 
             return Response({"response": response_text}, status=status.HTTP_200_OK)
 
+        except Chat.DoesNotExist:
+            return Response({"error": "Chat not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
         
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -67,7 +71,7 @@ class ChatViewSet(viewsets.ModelViewSet):
     lookup_field = 'chat_id'
 
     def get_queryset(self):
-        return Chat.objects.filter(user=self.request.user)
+        return Chat.objects.filter(user=self.request.user).order_by('-modified_at')
 
     def create(self, request, *args, **kwargs):
         name = request.data.get("name", "Untitled Chat")
