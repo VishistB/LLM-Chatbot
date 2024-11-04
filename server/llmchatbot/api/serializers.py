@@ -16,7 +16,7 @@ class MessageSerializer(serializers.ModelSerializer):
 class ChatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chat
-        fields = ['chat_id', 'name', 'created_at']
+        fields = ['chat_id', 'name', 'created_at', 'modified_at']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)

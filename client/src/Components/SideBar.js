@@ -47,16 +47,18 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
           Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
         },
       });
-      
-      // Set the chat list directly from the ordered response
+
+      // const sortedChats = response.data.sort(
+      //   (a, b) => new Date(b.modified_at) - new Date(a.modified_at)
+      // );
+
       setChatlist(response.data);
-  
-      // Auto-select the latest modified chat and load its messages
+
       if (response.data.length > 0) {
         const latestChatId = response.data[0].chat_id;
         setSelectedChat(latestChatId);
         setSelectedChatId(latestChatId);
-        handleChatSelect(latestChatId); // Load messages for the latest chat
+        handleChatSelect(latestChatId);
       }
     } catch (error) {
       console.error("Failed to load chats:", error);
@@ -73,21 +75,19 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
           },
         }
       );
-  
-      // Assuming response.data is an array of messages with sender info
+
       const messagesWithSender = response.data.map((message) => ({
-        sender: message.sender, // e.g., 'user' or 'bot'
+        sender: message.sender,
         content: message.content,
       }));
-  
-      setMessages(messagesWithSender); // This updates MessagesContext
+
+      setMessages(messagesWithSender);
       setSelectedChat(chat_id);
       setSelectedChatId(chat_id);
     } catch (error) {
       console.error("Failed to load messages:", error);
     }
   };
-  
 
   const confirmDeleteChat = (chat_id) => {
     setChatToDelete(chat_id);
@@ -245,7 +245,6 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
         </DialogActions>
       </Dialog>
 
-      {/* Confirmation Dialog for Deletion */}
       <Dialog
         open={confirmDialogOpen}
         onClose={() => setConfirmDialogOpen(false)}

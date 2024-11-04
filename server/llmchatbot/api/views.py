@@ -13,6 +13,7 @@ from .models import Chat, Message
 from rest_framework.permissions import AllowAny
 from rest_framework.generics import ListAPIView
 from datetime import datetime
+from django.utils import timezone
 
 
 env = environ.Env()
@@ -44,6 +45,9 @@ class PromptResponseView(APIView):
 
             bot_message = Message(chat=chat, sender="mimir", content=response_text, timestamp=datetime.now())
             bot_message.save()
+
+            chat.modified_at = timezone.now()
+            chat.save()
 
             return Response({"response": response_text}, status=status.HTTP_200_OK)
 
