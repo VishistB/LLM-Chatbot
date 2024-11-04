@@ -78,6 +78,7 @@ export default function ChatPage({ selectedChatId, setMessages }) {
             messages.map((msg, index) => (
               <Box
               key={index}
+              my={2}
               sx={{
                 display: "flex",
                 justifyContent:
@@ -90,7 +91,7 @@ export default function ChatPage({ selectedChatId, setMessages }) {
                     maxWidth: "70%",
                     backgroundColor:
                       msg.sender === "user" ? "#4B4F57" : "#3A3F45",
-                    padding: 1,
+                    padding: 2,
                     borderRadius: 2,
                   }}
                 >
