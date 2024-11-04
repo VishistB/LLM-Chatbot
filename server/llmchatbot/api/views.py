@@ -85,9 +85,12 @@ class ChatViewSet(viewsets.ModelViewSet):
             return Response({"error": "Chat not found."}, status=status.HTTP_404_NOT_FOUND)
 
 
-class ChatMessagesView(ListAPIView):
-    serializer_class = MessageSerializer
-
-    def get_queryset(self):
-        chat_id = self.kwargs["chat_id"]
-        return Message.objects.filter(chat_id=chat_id).order_by("timestamp")
+class ChatMessagesView(APIView):
+    def get(self, request, chat_id):
+        try:
+            chat = Chat.objects.get(chat_id=chat_id)
+            messages = chat.messages.all().order_by("timestamp")
+            serializer = MessageSerializer(messages, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Chat.DoesNotExist:
+            return Response({"error": "Chat not found"}, status=status.HTTP_404_NOT_FOUND)

@@ -1,10 +1,14 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Stack, Box, TextField, IconButton, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { MessagesContext } from "../Components/SideBar";
 
 export default function ChatPage() {
-  const messages = useContext(MessagesContext);  
+  const messages = useContext(MessagesContext);
+
+  useEffect(() => {
+    console.log("Messages in ChatPage:", messages);
+  }, [messages]);
 
   return (
     <Stack
@@ -17,7 +21,7 @@ export default function ChatPage() {
       <Box
         sx={{
           width: "100%",
-          maxWidth: 1000, 
+          maxWidth: 1000,
           height: "80%",
           display: "flex",
           flexDirection: "column",
@@ -55,17 +59,20 @@ export default function ChatPage() {
                 key={index}
                 sx={{
                   display: "flex",
-                  justifyContent: msg.sender === "user" ? "flex-end" : "flex-start",
+                  justifyContent:
+                    msg.sender === "user" ? "flex-end" : "flex-start",
                 }}
               >
                 <Typography
                   variant="body2"
                   sx={{
                     maxWidth: "70%",
-                    backgroundColor: msg.sender === "user" ? "#4B4F57" : "#3A3F45",
+                    backgroundColor:
+                      msg.sender === "user" ? "#4B4F57" : "#3A3F45",
                     padding: 1,
                     borderRadius: 2,
-                    alignSelf: msg.sender === "user" ? "flex-end" : "flex-start",
+                    alignSelf:
+                      msg.sender === "user" ? "flex-end" : "flex-start",
                   }}
                 >
                   {msg.content}
@@ -102,7 +109,7 @@ export default function ChatPage() {
               },
             }}
           />
-          <IconButton sx={{ marginLeft: 2, color:"#4A9E8F" }}>
+          <IconButton sx={{ marginLeft: 2, color: "#4A9E8F" }}>
             <SendIcon />
           </IconButton>
         </Box>

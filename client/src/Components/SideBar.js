@@ -53,6 +53,7 @@ export default function SideBar({ setMessages }) {
           Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
         },
       });
+      console.log("Fetched messages:", response.data);
       setMessages(response.data);  // Pass messages to context
       setSelectedChat(chat_id);
     } catch (error) {
