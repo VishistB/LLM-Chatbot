@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Box,
 } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import Logo from "../Assets/Mimir_Logo.png";
@@ -207,17 +208,18 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
               </Typography>
             )}
           </Stack>
-
-          <Button
-            variant="outlined"
-            onClick={openCreateChatModal}
-            sx={{ width: "90%", margin: "0 auto" }}
-          >
-            <Typography align="center" justifyContent="center">
-              ADD CHAT
-            </Typography>
-            <AddIcon />
-          </Button>
+          <Stack my={2} alignItems="center"> 
+            <Button
+              variant="outlined"
+              onClick={openCreateChatModal}
+              sx={{ width: "90%", margin: "0 auto",borderColor:"#4A9E8F", color:"#4A9E8F" }}
+            >
+              <Typography align="center" justifyContent="center">
+                ADD CHAT
+              </Typography>
+              <AddIcon />
+            </Button>
+          </Stack>
         </Stack>
       </Drawer>
 
