@@ -16,3 +16,6 @@ Mistral-7B-Instruct-v0.3 offers a high degree of versatility and performance for
 - MUI - React Components Library
 - Mistral-7B-Instruct-v0.3 from HuggingfaceHub.
 
+![alt text](Images/drf-logo2.png)
+![alt text](Images/reactjs-inner.svg)
+
