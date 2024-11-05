@@ -12,6 +12,7 @@ import {
   DialogActions,
   TextField,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import Drawer from "@mui/material/Drawer";
 import Logo from "../Assets/Mimir_Logo.png";
@@ -29,6 +30,7 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
   const [newChatName, setNewChatName] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [chatToDelete, setChatToDelete] = useState(null);
+  const [isLoadingChats, setIsLoadingChats] = useState(true);
 
   useEffect(() => {
     fetchChats();
@@ -61,6 +63,7 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
         setSelectedChatId(latestChatId);
         handleChatSelect(latestChatId);
       }
+      setIsLoadingChats(false);
     } catch (error) {
       console.error("Failed to load chats:", error);
     }
@@ -202,17 +205,29 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
                   </IconButton>
                 </Stack>
               ))
-            ) : (
+            ) : !isLoadingChats ? (
               <Typography color="white" mt={2}>
                 No chats started
               </Typography>
+            ) : (
+              <>
+                <Typography color="white" mt={2}>
+                  Loading chats
+                </Typography>
+                <CircularProgress />
+              </>
             )}
           </Stack>
-          <Stack my={2} alignItems="center"> 
+          <Stack my={2} alignItems="center">
             <Button
               variant="outlined"
               onClick={openCreateChatModal}
-              sx={{ width: "90%", margin: "0 auto",borderColor:"#4A9E8F", color:"#4A9E8F" }}
+              sx={{
+                width: "90%",
+                margin: "0 auto",
+                borderColor: "#4A9E8F",
+                color: "#4A9E8F",
+              }}
             >
               <Typography align="center" justifyContent="center">
                 ADD CHAT
@@ -224,20 +239,38 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
       </Drawer>
 
       <Dialog open={openDialog} onClose={closeCreateChatModal}>
-        <DialogTitle>Create a New Chat</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ backgroundColor: "#23262a", color: "white" }}>
+          Create a New Chat
+        </DialogTitle>
+        <DialogContent sx={{ backgroundColor: "#23262a" }}>
           <TextField
             autoFocus
             margin="dense"
             label="Chat Name"
+            placeholder="Chat Name"
             type="text"
             fullWidth
             variant="outlined"
             value={newChatName}
             onChange={(e) => setNewChatName(e.target.value)}
+            sx={{
+              input: { color: "white" },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#4A9E8F",
+                  color: "white",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#4A9E8F",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#4A9E8E",
+                },
+              },
+            }}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ backgroundColor: "#23262a" }}>
           <Button onClick={closeCreateChatModal} color="primary">
             Cancel
           </Button>
@@ -251,11 +284,13 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
         open={confirmDialogOpen}
         onClose={() => setConfirmDialogOpen(false)}
       >
-        <DialogTitle>Confirm Deletion</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ backgroundColor: "#23262a", color: "white" }}>
+          Confirm Deletion
+        </DialogTitle>
+        <DialogContent sx={{ backgroundColor: "#23262a", color: "white" }}>
           <Typography>Are you sure you want to delete this chat?</Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ backgroundColor: "#23262a" }}>
           <Button onClick={() => setConfirmDialogOpen(false)} color="primary">
             Cancel
           </Button>
