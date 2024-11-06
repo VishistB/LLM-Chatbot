@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Stack, Box, TextField, IconButton, Typography } from "@mui/material";
+import { Stack, Box, TextField, IconButton, Typography, CircularProgress } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import axios from "axios";
 import { MessagesContext } from "../Components/SideBar";
 
-export default function ChatPage({ selectedChatId, setMessages }) {
+export default function ChatPage({ selectedChatId, setMessages, msgLoading }) {
   const messages = useContext(MessagesContext);
   const [inputMessage, setInputMessage] = useState("");
+  const [isSendingMsg, setIsSendingMsg]=useState(false);
 
   const handleSendMessage = async () => {
     if (!inputMessage || !selectedChatId) return;
-
+    setIsSendingMsg(true)
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_API_BASE}/api/chats/${selectedChatId}/prompt_response/`,
@@ -28,6 +29,7 @@ export default function ChatPage({ selectedChatId, setMessages }) {
         { sender: "mimir", content: response.data.response },
       ]);
       setInputMessage("");
+      setIsSendingMsg(false)
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -102,6 +104,7 @@ export default function ChatPage({ selectedChatId, setMessages }) {
               </Box>
             ))
           )}
+          {(isSendingMsg || msgLoading) && (<CircularProgress/>)}
         </Box>
 
         <Box

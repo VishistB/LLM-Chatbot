@@ -23,7 +23,7 @@ import axios from "axios";
 
 export const MessagesContext = createContext();
 
-export default function SideBar({ setMessages, setSelectedChatId }) {
+export default function SideBar({ setMessages, setSelectedChatId, setMsgLoading }) {
   const [chatlist, setChatlist] = useState([]);
   const [selectedChat, setSelectedChat] = useState(0);
   const [openDialog, setOpenDialog] = useState(false);
@@ -70,6 +70,7 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
   };
 
   const handleChatSelect = async (chat_id) => {
+    setMsgLoading(true);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_API_BASE}/api/chats/${chat_id}/messages/`,
@@ -90,6 +91,8 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
       setSelectedChatId(chat_id);
     } catch (error) {
       console.error("Failed to load messages:", error);
+    }finally {
+      setMsgLoading(false);
     }
   };
 
