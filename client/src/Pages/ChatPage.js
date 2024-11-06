@@ -13,7 +13,7 @@ export default function ChatPage({ selectedChatId, setMessages }) {
 
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/chats/${selectedChatId}/prompt_response/`,
+        `${process.env.REACT_APP_API_BASE}/api/chats/${selectedChatId}/prompt_response/`,
         { prompt: inputMessage },
         {
           headers: {
@@ -93,6 +93,7 @@ export default function ChatPage({ selectedChatId, setMessages }) {
                       msg.sender === "user" ? "#4B4F57" : "#3A3F45",
                     padding: 2,
                     borderRadius: 2,
+                    fontSize:"1rem"
                   }}
                 >
                   {/* {msg.sender} */}

@@ -45,7 +45,7 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
 
   const fetchChats = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/chats/", {
+      const response = await axios.get(`${process.env.REACT_APP_API_BASE}/api/chats/`, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
         },
@@ -72,7 +72,7 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
   const handleChatSelect = async (chat_id) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/chats/${chat_id}/messages/`,
+        `${process.env.REACT_APP_API_BASE}/api/chats/${chat_id}/messages/`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -101,7 +101,7 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
   const handleDeleteChat = async () => {
     try {
       await axios.delete(
-        `http://localhost:8000/api/chats/${chatToDelete}/delete_chat/`,
+        `${process.env.REACT_APP_API_BASE}/api/chats/${chatToDelete}/delete_chat/`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
@@ -128,7 +128,7 @@ export default function SideBar({ setMessages, setSelectedChatId }) {
   const handleCreateChat = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/chats/",
+        `${process.env.REACT_APP_API_BASE}/api/chats/`,
         { name: newChatName },
         {
           headers: {
