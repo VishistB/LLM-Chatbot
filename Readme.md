@@ -18,5 +18,37 @@ Mistral-7B-Instruct-v0.3 offers a high degree of versatility and performance for
 
 # Steps To Run
 
-1. <pre>git clone https://github.com/VishistB/LLM-Chatbot.git</pre> 
+1. Clone the repository locally an open up the directory in a terminal.
+```bash
+git clone https://github.com/VishistB/LLM-Chatbot.git
+```
 
+2. Download the client side packages.
+```bash
+npm i
+```
+
+3. Download the Python modules.
+```bash
+python -m pip install -r requirements.txt
+```
+
+4. Download Ollama.
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+5. Pull and run mistral(7B). If no error shows up you are good to go.
+```bash
+ollama run mistral
+```
+
+6. Start Server after going to server base folder with manage.py
+```bash
+python manage.py runserver
+```
+
+7. Start Client by going into the client folder.
+```bash
+npm start
+```
