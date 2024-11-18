@@ -14,6 +14,7 @@ from rest_framework.generics import ListAPIView
 from datetime import datetime
 from django.utils import timezone
 import ollama
+import HuggingFaceEndpoint
 
 
 env = environ.Env()
@@ -38,24 +39,26 @@ class PromptResponseView(APIView):
             user_message = Message(chat=chat, sender="user", content=prompt, timestamp=datetime.now())
             user_message.save()
 
-            # HUGGINGFACE_API_KEY = env('HUGGINGFACE_API_KEY')
-            # repo_id = "mistralai/Mistral-7B-Instruct-v0.3"
-            # llm = HuggingFaceEndpoint(repo_id=repo_id, max_length=128, temperature=0.7, api=HUGGINGFACE_API_KEY)
-            # response_text = llm.invoke(prompt)
-            response = ollama.chat(model='mistral', messages=[
-                {
-                    'role': 'user',
-                    'content': prompt,
-                },
-            ])
+            HUGGINGFACE_API_KEY = env('HUGGINGFACE_API_KEY')
+            repo_id = "mistralai/Mistral-7B-Instruct-v0.3"
+            llm = HuggingFaceEndpoint(repo_id=repo_id, max_length=128, temperature=0.7, api=HUGGINGFACE_API_KEY)
+            response_text = llm.invoke(prompt)
+            # response = ollama.chat(model='mistral', messages=[
+            #     {
+            #         'role': 'user',
+            #         'content': prompt,
+            #     },
+            # ])
             # print(response['message']['content'])
-            bot_message = Message(chat=chat, sender="mimir", content=response['message']['content'], timestamp=datetime.now())
+            # bot_message = Message(chat=chat, sender="mimir", content=response['message']['content'], timestamp=datetime.now())
+            bot_message = Message(chat=chat, sender="mimir", content=response_text, timestamp=datetime.now())
             bot_message.save()
 
             chat.modified_at = timezone.now()
             chat.save()
 
-            return Response({"response": response['message']['content']}, status=status.HTTP_200_OK)
+            # return Response({"response": response['message']['content']}, status=status.HTTP_200_OK)
+            return Response({"response": response_text}, status=status.HTTP_200_OK)
 
         except Chat.DoesNotExist:
             return Response({"error": "Chat not found"}, status=status.HTTP_404_NOT_FOUND)
