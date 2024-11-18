@@ -14,7 +14,7 @@ export default function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_BASE}/token/`, { 
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE}/api/token/`, { 
         username, 
         password 
       });
