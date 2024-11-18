@@ -14,7 +14,7 @@ from rest_framework.generics import ListAPIView
 from datetime import datetime
 from django.utils import timezone
 import ollama
-import HuggingFaceEndpoint
+from langchain_huggingface import HuggingFaceEndpoint
 
 
 env = environ.Env()
