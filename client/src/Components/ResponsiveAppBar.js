@@ -20,8 +20,7 @@ function ResponsiveAppBar() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    // Assuming you fetch the user's name from localStorage or an API
-    const storedUserName = localStorage.getItem("userName") || "User"; // Replace with actual data fetch
+    const storedUserName = localStorage.getItem("userName") || "User";
     setUserName(storedUserName);
   }, []);
 
@@ -40,10 +39,10 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static" sx={{ background: "rgba(0,0,0,0)", boxShadow: "0 0 0 0" }}>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Box sx={{ flexGrow: 1 }} />
+    <AppBar position="static" sx={{ background: "rgba(0,0,0,0)", boxShadow: "0 0 0 0",margin:0,padding:0 }}>
+      {/* <Container maxWidth="xl" > */}
+        <Toolbar sx={{display:"flex", justifyContent:"space-between"}}>
+          <Box sx={{ flexGrow: 0 }} />
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -74,7 +73,7 @@ function ResponsiveAppBar() {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
+      {/* </Container> */}
     </AppBar>
   );
 }
