@@ -59,7 +59,7 @@ pip install -U "huggingface_hub[cli]"
 5. Now log into the cli using the command below. You will be prompted to paste your HF token (read).
 
 ```bash
-    huggingface-cli login
+huggingface-cli login
 ```
 
 <!-- 5. Pull and run mistral(7B). If no error shows up you are good to go.
